@@ -1,0 +1,27 @@
+{
+  "name": "my-lib",
+  "version": "1.0.0",
+  "description": "my lib",
+  "main": "index.js",
+  "scripts": {
+    "start": "rollup -c rollup.config.ts -w",
+    "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "prebuild": "rimraf dist",
+    "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "yjh",
+  "license": "MIT",
+  "devDependencies": {
+    "rollup": "^0.64.1",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rimraf": "^2.6.1",
+    "typescript": "^2.5.3",
+    "rollup-plugin-typescript2": "^0.11.1",
+    "@types/node": "^10.0.3",
+    "typedoc": "^0.11.0",
+    "tslint": "^5.8.0",
+    "tslint-config-prettier": "^1.1.0",
+    "tslint-config-standard": "^7.0.0"
+  }
+}
