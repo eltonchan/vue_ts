@@ -6,7 +6,8 @@ export default {
     input: 'src/main.ts',
     output: {
         file: 'dist/bundle.js',
-        format: 'cjs',
+        format: 'umd',
+        name: 'myBundle',
         sourcemap: true
     },
     plugins: [
