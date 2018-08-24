@@ -1,4 +1,3 @@
-import { watch } from "fs";
 
 export interface IReactive {
     data: object,
@@ -7,7 +6,7 @@ export interface IReactive {
 }
 
 export interface IDep {
-    subs: any[],
+    // subs: any[],
     addSub: Function,
     notify: Function,
 }
@@ -17,16 +16,15 @@ export interface Isub {
 }
 
 export interface IWatcher {
-    vm: {
-        data: object
-    },
-    cb: Function,
-    expression: string
+    vm: object,
+    cb?: Function,
+    expression: string,
+    computed?: boolean,
 }
 
 export interface IVue {
-    data: object,
+    _data: object,
     methods: object,
     el: string,
-    watch?: object
+    _watchers: any[]
 }

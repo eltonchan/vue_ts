@@ -75,15 +75,15 @@ export default class Compile {
         const initText = this.vm[exp];
         this.updateText(node, initText);
 
-        const textWatcher = new Watcher({
+        new Watcher({
             vm,
             expression: exp,
-            cb: value => {
+            render: value => {
+                console.info('exp', exp);
                 self.updateText(node, value);
             }
         });
 
-        vm._watch.push(textWatcher);
     }
 
     compileEvent (node, vm, exp, dir) {
@@ -100,15 +100,14 @@ export default class Compile {
         let val = this.vm[exp];
         this.modelUpdater(node, val);
 
-        const modelWatcher = new Watcher({
+        new Watcher({
             vm,
             expression: exp,
-            cb: value => {
+            render: value => {
                 self.modelUpdater(node, value);
             }
         });
 
-        vm._watch.push(modelWatcher);
 
         node.addEventListener('input', function(e) {
             const newValue = e.target.value;

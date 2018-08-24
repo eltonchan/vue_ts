@@ -1,48 +1,45 @@
 // 订阅者Watcher
 
-import { IWatcher } from './types';
+import { IWatcher,IVue } from './types';
 import Dep from './dep';
+import { noop } from './utils';
 
 let uid = 0;
 
 export default class Watcher implements IWatcher{
-    vm: {
-        data: object
-    };
-    cb: Function;
-    expression: string;
-    id: number;
+    vm;
+    cb:Function = noop;
+    expression;
+    getter;
+    id = 0;
     value: any;
+    computed = false;
 
-    constructor(options: IWatcher) {
-        this.vm = options.vm;
-        this.cb = options.cb;
-        this.expression = options.expression;
+    constructor(
+        vm: IVue,
+        expression: Function,
+        cb: Function,
+        computed: boolean = false
+    ) {
+        this.vm = vm;
+        vm._watchers.push(this);
+
+        this.cb = cb || noop;
+        this.expression = expression.toString();
         this.id = ++uid;
-        this.value = this.get();
-    }
+        this.computed = computed; // for computed watchers
+        this.getter = expression;
 
-    update() :void {
-        this.run();
-    }
-
-    run() :void {
-        const {
-            expression,
-            value: oldValue,
-            vm: { data }
-        } = this;
-        const value = data[expression];
-
-        if (oldValue !== value) {
-            this.value = value;
-            this.cb.call(this.vm, value, oldValue);
+        if (this.computed) {
+            this.value = undefined;
+        } else {
+            this.value = this.get();
         }
     }
 
     get() :void {
         Dep.target = this;
-        const value = this.vm.data[this.expression]; // 执行一次get 收集依赖
+        const value = this.getter.call(this.vm); // 执行一次get 收集依赖
         Dep.target = null;
         return value;
     }

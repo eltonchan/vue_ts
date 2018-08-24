@@ -1,4 +1,6 @@
 
+export const noop = () => null;
+
 export function proxy (target, sourceKey, key) {
     Object.defineProperty(target, key, {
         enumerable: true,
@@ -12,3 +14,4 @@ export function proxy (target, sourceKey, key) {
         }
     });
 }
+

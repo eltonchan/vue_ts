@@ -1,64 +1,73 @@
 
 // mvvm 
 import { IVue } from './types';
-import { proxy } from './utils';
-import observe from './observe';
-import Compile from './Compile';
+import { proxy, noop } from './utils';
+import Observe from './observe';
+// import Compile from './Compile';
 import Watcher from './watcher';
+import defineComputed from './computed';
 
 
 let uid = 0;
-class Vue {
-    id: number;
-    data: object = {};
-    methods: object = {};
-    el: Node | null;
-    _vm: {
-        data: object
-    };
-    _watch: any[] = [];
 
-    constructor(options: IVue) {
+class Vue implements IVue {
+    id = 0;
+    el = '';
+    vm: Vue;
+    ob;
+    _data = Object.create(null);
+    methods = Object.create(null);
+    _computedWatchers = Object.create(null);
+    _watchers: any[] = [];
+
+    constructor(options) {
         this.id = ++uid;
-        this._vm = this;
-        this.data = options.data;
+        this.vm = this;
+        this._data = options.data;
         this.methods = options.methods;
-        this.el = document.querySelector(options.el);
+        this.el = options.el;
 
-        const keys = Object.keys(options.data);
+        this.initData();
+        this.$mount();
+
+    }
+
+    initData() {
+        const keys = Object.keys(this._data);
         let i = keys.length;
 
         while(i--) {
-            proxy(this, "data", keys[i]);
+            proxy(this, "_data", keys[i]);
         }
 
-        observe(this.data);
-
-        new Compile({ el: this.el, vm: this });
-
-        this.initWatch(options.watch);
-
+        this.ob = new Observe(this._data);
     }
 
-    $watch(expression: string, cb: Function): void {
-        this._watch.push(new Watcher({
-            vm: this,
-            expression,
-            cb
-        }));
+    $mount() {
+        new Watcher(this, this._render, noop);
     }
 
-    initWatch(watch) {
-        if (!watch || typeof watch !== 'object') return;
-        const keys = Object.keys(watch);
-        let i = keys.length;
-
-        while(i--) {
-            const key = keys[i];
-            const cb = watch[key];
-            this.$watch(key, cb);
-        }
+    _render() {
+        console.log('render', this._data.name);
     }
+
+    // initWatch(watch) {
+    //     if (!watch || typeof watch !== 'object') return;
+    //     const keys = Object.keys(watch);
+    //     let i = keys.length;
+
+    //     while(i--) {
+    //         const key = keys[i];
+    //         const cb = watch[key];
+    //         this.$watch(key, cb);
+    //     }
+    // }
+
+    // initComputed(computed) {
+    //     if (!computed || typeof computed !== 'object') return;
+    //     const keys = Object.keys(computed);
+    //     let i = keys.length;
+    // }
 }
 
 (window as any).Vue = Vue;

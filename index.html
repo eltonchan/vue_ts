@@ -9,10 +9,11 @@
 </head>
 <body>
     <div id="app">
-        <h2>{{ name }}</h2>
+        <!-- <h2>{{ name }}</h2>
         <input type="text" v-model="age" />
         <p>{{ age }}</p>
-        <button @click="add">add age</button>
+        <p>info : {{ info }}</p>
+        <button @click="add">add age</button> -->
     </div>
     <script>
         window.vm = new Vue({
@@ -21,16 +22,22 @@
                 name: 'jim',
                 age: 10
             },
-            watch: {
-                age(val) {
-                    this.name += val;
-                }
-            },
-            methods: {
-                add: function() {
-                    this.age += 1;
-                }
-            }
+            // computed: {
+            //     info() {
+            //         console.info('computed update');
+            //         return this.name + 'hello';
+            //     }
+            // },
+            // watch: {
+            //     age(val) {
+            //         this.name += val;
+            //     }
+            // },
+            // methods: {
+            //     add: function() {
+            //         this.age += 1;
+            //     }
+            // }
         })
     </script>
 </body>
