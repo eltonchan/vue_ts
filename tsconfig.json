@@ -9,6 +9,7 @@
     "moduleResolution": "node",
     "noImplicitAny": false,
     "target": "es5",
+    "lib": ["es2016", "dom"],
     "strictPropertyInitialization": false
   },
   "include": [

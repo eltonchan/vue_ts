@@ -4,16 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>vue 0.1</title>
     <script src="./dist/bundle.js"></script>
 </head>
 <body>
     <div id="app">
         <h2>{{ name }}</h2>
-        <!-- <input type="text" v-model="age" /> -->
-        <!-- <p>{{ age }}</p> -->
-        <!-- <p>info : {{ info }}</p> -->
-        <!-- <button @click="add">add age</button> -->
+        <input type="text" v-model="age" />
+        <p>{{ age }}</p>
+        <p>info : {{ info }}</p>
+        <button @click="add">add age</button>
+        <button @click="changeName">change name</button>
     </div>
     <script>
         window.vm = new Vue({
@@ -22,22 +23,33 @@
                 name: 'jim',
                 age: 10
             },
-            // computed: {
-            //     info() {
-            //         console.info('computed update');
-            //         return this.name + 'hello';
-            //     }
-            // },
-            // watch: {
-            //     age(val) {
-            //         this.name += val;
-            //     }
-            // },
-            // methods: {
-            //     add: function() {
-            //         this.age += 1;
-            //     }
-            // }
+            
+            mounted: function() {
+                console.info('mounted');
+            },
+
+            computed: {
+                info() {
+                    console.info('computed update');
+                    return this.name + 'hello';
+                }
+            },
+
+            watch: {
+                age(val) {
+                    console.info('age has change:', val);
+                }
+            },
+
+            methods: {
+                add: function() {
+                    this.age += 1;
+                },
+
+                changeName: function() {
+                    this.name = `jim${this.age}`;
+                },
+            }
         })
     </script>
 </body>

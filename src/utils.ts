@@ -15,3 +15,10 @@ export function proxy (target, sourceKey, key) {
     });
 }
 
+
+export function callHook (vm, hook) {
+    const handlers = vm._options[hook];
+    if (handlers && typeof handlers === 'function') {
+        handlers.call(vm);
+    }
+}

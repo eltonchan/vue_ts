@@ -6,7 +6,8 @@ export interface IReactive {
 }
 
 export interface IDep {
-    // subs: any[],
+    subs: any[],
+    id: number,
     addSub: Function,
     notify: Function,
 }
@@ -20,11 +21,13 @@ export interface IWatcher {
     cb?: Function,
     expression: string,
     computed?: boolean,
+    id: number,
+    run: Function
 }
 
 export interface IVue {
     _data: object,
     methods: object,
     el: string,
-    _watchers: any[]
+    _watchers: any[],
 }

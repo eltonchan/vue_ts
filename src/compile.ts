@@ -4,12 +4,13 @@ import Watcher from './watcher';
 export default class Compile {
     vm: object;
     el: Element;
+    originEle: Element;
     fragment: Node | null;
 
     constructor(vm, el) {
         this.vm = vm;
         this.el = el;
-        this.fragment = null;
+        this.init();
     }
 
     init() {
@@ -62,7 +63,7 @@ export default class Compile {
                 } else {  // v-model 指令
                     self.compileModel(node, self.vm, exp);
                 }
-                node.removeAttribute(attrName);
+                // node.removeAttribute(attrName);
             }
         });
     }
@@ -73,6 +74,10 @@ export default class Compile {
         const self = this;
         const initText = this.vm[exp];
         this.updateText(node, initText);
+        vm._updates.push(() => {
+            const initText = this.vm[exp];
+            self.updateText(node, initText);
+        });
     }
 
     compileEvent (node, vm, exp, dir) {
@@ -89,6 +94,10 @@ export default class Compile {
         let val = this.vm[exp];
         this.modelUpdater(node, val);
 
+        vm._updates.push(() => {
+            let val = this.vm[exp];
+            self.modelUpdater(node, val);
+        });
 
         node.addEventListener('input', function(e) {
             const newValue = e.target.value;

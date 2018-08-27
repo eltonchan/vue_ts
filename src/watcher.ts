@@ -3,38 +3,43 @@
 import { IWatcher,IVue } from './types';
 import Dep from './dep';
 import { noop } from './utils';
+import queueWatcher from './scheduler';
 
 let uid = 0;
 
 export default class Watcher implements IWatcher {
     vm;
-    cb:Function = noop;
+    cb: Function = noop;
     expression;
     getter;
+    depIds: Set<any>;
     id = 0;
     value: any;
-    computed = false;
+    computed: boolean = false;
 
     constructor(
         vm: IVue,
-        expression: Function,
+        expression: Function | string,
         cb: Function,
-        computed: boolean = false
     ) {
         this.vm = vm;
         vm._watchers.push(this);
 
         this.cb = cb || noop;
-        this.expression = expression.toString();
-        this.id = ++uid;
-        this.computed = computed; // for computed watchers
-        this.getter = expression;
 
-        if (this.computed) {
-            this.value = undefined;
+        this.id = ++uid;
+
+        // 处理watch 的情况
+        if (typeof expression === 'function') {
+            this.getter = expression;
         } else {
-            this.value = this.get();
+            this.getter = () => vm[expression];
         }
+
+        this.expression = expression.toString();
+        this.depIds = new Set();
+
+        this.value = this.get();
     }
 
     get() :void {
@@ -43,4 +48,25 @@ export default class Watcher implements IWatcher {
         Dep.target = null;
         return value;
     }
+
+    addDep(dep: Dep) {
+        const id = dep.id;
+        if (!this.depIds.has(id)) {
+            dep.addSub(this);
+        }
+    }
+
+    update() {
+        queueWatcher(this);
+    }
+
+    run(cb) {
+        const value = this.get();
+        if (value !== this.value) {
+            const oldValue = this.value;
+            this.value = value;
+            cb.call(this.vm, value, oldValue);
+        }
+    }
+
 }

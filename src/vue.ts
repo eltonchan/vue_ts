@@ -6,6 +6,7 @@ import Observe from './observe';
 import Compile from './Compile';
 import Watcher from './watcher';
 import defineComputed from './computed';
+import { callHook } from './utils';
 
 
 let uid = 0;
@@ -20,16 +21,24 @@ export default class Vue implements IVue {
     methods = Object.create(null);
     _computedWatchers = Object.create(null);
     _watchers: any[] = [];
+    _updates: Array<Function> = [];
+    _options: object;
 
     constructor(options) {
         this.id = ++uid;
         this.vm = this;
+        this._options = options;
         this._data = options.data;
         this.methods = options.methods;
         this.el = options.el;
 
         this.initData();
+        this.initComputed(options.computed);
+
         this.$mount();
+        callHook(this, 'mounted');
+
+        this.initWatch(options.watch);
 
     }
 
@@ -47,29 +56,43 @@ export default class Vue implements IVue {
     $mount() {
         const el = document.querySelector(this.el);
         this._compile = new Compile(this, el);
-
         new Watcher(this, this._render, noop);
     }
 
     _render() {
-        this._compile.init();
+        const updates = this._updates;
+        for (let i = 0; i < updates.length; i++) {
+            updates[i]();
+        }
     }
 
-    // initWatch(watch) {
-    //     if (!watch || typeof watch !== 'object') return;
-    //     const keys = Object.keys(watch);
-    //     let i = keys.length;
+    initWatch(watch) {
+        if (!watch || typeof watch !== 'object') return;
+        const keys = Object.keys(watch);
+        let i = keys.length;
 
-    //     while(i--) {
-    //         const key = keys[i];
-    //         const cb = watch[key];
-    //         this.$watch(key, cb);
-    //     }
-    // }
+        while(i--) {
+            const key = keys[i];
+            const cb = watch[key];
+            new Watcher(this, key, cb);
+        }
+    }
 
-    // initComputed(computed) {
-    //     if (!computed || typeof computed !== 'object') return;
-    //     const keys = Object.keys(computed);
-    //     let i = keys.length;
-    // }
+    initComputed(computed) {
+        if (!computed || typeof computed !== 'object') return;
+        const keys = Object.keys(computed);
+        const watchers = this._computedWatchers;
+        let i = keys.length;
+        while(i--) {
+            const key = keys[i];
+            const func = computed[key];
+            watchers[key] = new Watcher(
+                this,
+                func || noop,
+                noop,
+            );
+
+            defineComputed(this, key);
+        }
+    }
 }

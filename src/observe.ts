@@ -2,8 +2,6 @@
 import { IReactive } from './types';
 import Dep from './dep';
 
-export const dep = new Dep();
-
 
 export default class Observe {
 
@@ -31,7 +29,7 @@ export default class Observe {
             configurable: true,
             get() {
                 if (Dep.target) {
-                    dep.addSub(Dep.target);
+                    Dep.target.addDep(dep);
                 }
                 return value;
             },
