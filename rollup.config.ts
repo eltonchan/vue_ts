@@ -3,7 +3,7 @@ import typescript from 'rollup-plugin-typescript2';
 import sourceMaps from 'rollup-plugin-sourcemaps';
 
 export default {
-    input: 'src/main.ts',
+    input: 'src/index.ts',
     output: {
         file: 'dist/bundle.js',
         format: 'umd',

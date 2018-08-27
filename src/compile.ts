@@ -6,11 +6,10 @@ export default class Compile {
     el: Element;
     fragment: Node | null;
 
-    constructor(options) {
-        this.vm = options.vm;
-        this.el = options.el;
+    constructor(vm, el) {
+        this.vm = vm;
+        this.el = el;
         this.fragment = null;
-        this.init();
     }
 
     init() {
@@ -74,16 +73,6 @@ export default class Compile {
         const self = this;
         const initText = this.vm[exp];
         this.updateText(node, initText);
-
-        new Watcher({
-            vm,
-            expression: exp,
-            render: value => {
-                console.info('exp', exp);
-                self.updateText(node, value);
-            }
-        });
-
     }
 
     compileEvent (node, vm, exp, dir) {
@@ -99,14 +88,6 @@ export default class Compile {
         const self = this;
         let val = this.vm[exp];
         this.modelUpdater(node, val);
-
-        new Watcher({
-            vm,
-            expression: exp,
-            render: value => {
-                self.modelUpdater(node, value);
-            }
-        });
 
 
         node.addEventListener('input', function(e) {

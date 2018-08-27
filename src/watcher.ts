@@ -6,7 +6,7 @@ import { noop } from './utils';
 
 let uid = 0;
 
-export default class Watcher implements IWatcher{
+export default class Watcher implements IWatcher {
     vm;
     cb:Function = noop;
     expression;

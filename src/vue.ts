@@ -3,18 +3,19 @@
 import { IVue } from './types';
 import { proxy, noop } from './utils';
 import Observe from './observe';
-// import Compile from './Compile';
+import Compile from './Compile';
 import Watcher from './watcher';
 import defineComputed from './computed';
 
 
 let uid = 0;
 
-class Vue implements IVue {
+export default class Vue implements IVue {
     id = 0;
     el = '';
     vm: Vue;
     ob;
+    _compile: Compile;
     _data = Object.create(null);
     methods = Object.create(null);
     _computedWatchers = Object.create(null);
@@ -44,11 +45,14 @@ class Vue implements IVue {
     }
 
     $mount() {
+        const el = document.querySelector(this.el);
+        this._compile = new Compile(this, el);
+
         new Watcher(this, this._render, noop);
     }
 
     _render() {
-        console.log('render', this._data.name);
+        this._compile.init();
     }
 
     // initWatch(watch) {
@@ -69,5 +73,3 @@ class Vue implements IVue {
     //     let i = keys.length;
     // }
 }
-
-(window as any).Vue = Vue;
