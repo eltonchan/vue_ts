@@ -23,7 +23,6 @@
             handlers.call(vm);
         }
     }
-    //# sourceMappingURL=utils.js.map
 
     var uid = 0;
     var Dep = /** @class */ (function () {
@@ -50,7 +49,6 @@
         Dep.target = null;
         return Dep;
     }());
-    //# sourceMappingURL=dep.js.map
 
     var Observe = /** @class */ (function () {
         function Observe(data) {
@@ -93,7 +91,6 @@
         };
         return Observe;
     }());
-    //# sourceMappingURL=observe.js.map
 
     var Compile = /** @class */ (function () {
         function Compile(vm, el) {
@@ -210,7 +207,6 @@
         };
         return Compile;
     }());
-    //# sourceMappingURL=compile.js.map
 
     var callbacks = [];
     var pending = false;
@@ -232,7 +228,6 @@
             microTimerFunc();
         }
     }
-    //# sourceMappingURL=next-tick.js.map
 
     var queue = [];
     var has = new Map();
@@ -260,9 +255,11 @@
         waiting = flushing = false;
         has = new Map();
     }
+    // flushSchedulerQueue是下一个tick时的回调函数，主要目的是执行Watcher的run函数，用来更新视图
     function flushSchedulerQueue() {
         flushing = true;
         var watcher, id;
+        // 先创建 先执行 组件更新的顺序是从父组件到子组件的顺序，因为父组件总是比子组件先创建
         queue.sort(function (a, b) { return a.id - b.id; });
         for (index = 0; index < queue.length; index++) {
             watcher = queue[index];
@@ -272,7 +269,6 @@
         }
         resetSchedulerState();
     }
-    //# sourceMappingURL=scheduler.js.map
 
     // 订阅者Watcher
     var uid$1 = 0;
@@ -321,7 +317,6 @@
         };
         return Watcher;
     }());
-    //# sourceMappingURL=watcher.js.map
 
     function defineComputed(vm, key) {
         Object.defineProperty(vm, key, {
@@ -333,7 +328,6 @@
             },
         });
     }
-    //# sourceMappingURL=computed.js.map
 
     var uid$2 = 0;
     var Vue = /** @class */ (function () {
@@ -363,7 +357,7 @@
             while (i--) {
                 proxy(this, "_data", keys[i]);
             }
-            this.ob = new Observe(this._data);
+            new Observe(this._data);
         };
         Vue.prototype.$mount = function () {
             var el = document.querySelector(this.el);
@@ -402,10 +396,8 @@
         };
         return Vue;
     }());
-    //# sourceMappingURL=vue.js.map
 
     window.Vue = Vue;
-    //# sourceMappingURL=index.js.map
 
 })));
 //# sourceMappingURL=bundle.js.map

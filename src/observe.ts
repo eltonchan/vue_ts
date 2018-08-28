@@ -2,7 +2,6 @@
 import { IReactive } from './types';
 import Dep from './dep';
 
-
 export default class Observe {
 
     constructor(data) {

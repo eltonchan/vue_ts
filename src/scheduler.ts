@@ -33,10 +33,12 @@ function resetSchedulerState () {
     has = new Map();
 }
 
+// flushSchedulerQueue是下一个tick时的回调函数，主要目的是执行Watcher的run函数，用来更新视图
 function flushSchedulerQueue () {
     flushing = true;
     let watcher, id;
 
+    // 先创建 先执行 组件更新的顺序是从父组件到子组件的顺序，因为父组件总是比子组件先创建
     queue.sort((a, b) => a.id - b.id);
 
     for (index = 0; index < queue.length; index++) {

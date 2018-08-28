@@ -1,7 +1,8 @@
+import { IVue } from "./types";
 
 export const noop = () => null;
 
-export function proxy (target, sourceKey, key) {
+export function proxy (target: IVue, sourceKey: string, key: string) {
     Object.defineProperty(target, key, {
         enumerable: true,
         configurable: true,

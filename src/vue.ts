@@ -15,7 +15,6 @@ export default class Vue implements IVue {
     id = 0;
     el = '';
     vm: Vue;
-    ob;
     _compile: Compile;
     _data = Object.create(null);
     methods = Object.create(null);
@@ -50,7 +49,7 @@ export default class Vue implements IVue {
             proxy(this, "_data", keys[i]);
         }
 
-        this.ob = new Observe(this._data);
+        new Observe(this._data);
     }
 
     $mount() {
@@ -96,3 +95,4 @@ export default class Vue implements IVue {
         }
     }
 }
+
