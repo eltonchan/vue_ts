@@ -5,8 +5,9 @@ let pending: boolean = false;
 function flushCallbacks () {
     pending = false;
     const copies = callbacks.slice(0);
+    const len = copies.length;
     callbacks.length = 0;
-    for (let i = 0; i < copies.length; i++) {
+    for (let i = 0; i < len; i++) {
         copies[i]();
     }
 }

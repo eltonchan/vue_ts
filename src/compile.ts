@@ -18,7 +18,8 @@ export default class Compile {
         this.compileElement(this.fragment);
         this.el.appendChild(this.fragment);
     }
-
+    // 减少页面的重排(Reflows)和重绘(Repaints)
+    // 创建文档片段处理，操作后追加到页面 1次重排;
     nodeToFragment(el: Element) :Node {
         const fragment = document.createDocumentFragment();
         let child = el.firstChild;
@@ -63,7 +64,7 @@ export default class Compile {
                 } else {  // v-model 指令
                     self.compileModel(node, self.vm, exp);
                 }
-                // node.removeAttribute(attrName);
+                node.removeAttribute(attrName);
             }
         });
     }
@@ -74,6 +75,7 @@ export default class Compile {
         const self = this;
         const initText = this.vm[exp];
         this.updateText(node, initText);
+
         vm._updates.push(() => {
             const initText = this.vm[exp];
             self.updateText(node, initText);

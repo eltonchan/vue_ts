@@ -35,8 +35,9 @@ function flushSchedulerQueue () {
 
     // 先创建 先执行 组件更新的顺序是从父组件到子组件的顺序，因为父组件总是比子组件先创建
     queue.sort((a, b) => a.id - b.id);
+    const len = queue.length;
 
-    for (let i = 0; i < queue.length; i++) {
+    for (let i = 0; i < len; i++) {
         watcher = queue[i];
         id = watcher.id;
         has[id] = void 0;
