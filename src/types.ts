@@ -30,4 +30,5 @@ export interface IVue {
     methods: object,
     el: string,
     _watchers: any[],
+    _computedWatchers: object,
 }

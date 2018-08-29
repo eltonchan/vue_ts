@@ -1,6 +1,7 @@
+import { IVue } from "./types";
 
 
-export default function defineComputed(vm, key) {
+export default function defineComputed(vm: IVue, key: string) {
     Object.defineProperty(vm, key, {
         enumerable: true,
         configurable: true,

@@ -57,6 +57,7 @@ export default class Watcher implements IWatcher {
     }
 
     update() {
+        // 推送到观察者队列中，下一个tick时调用。*/
         queueWatcher(this);
     }
 
