@@ -2,7 +2,7 @@
 <p align="center"><a href="https://vuejs.org" target="_blank" rel="noopener noreferrer"><img width="100" src="https://vuejs.org/images/logo.png" alt="Vue logo"></a></p>
 
 ### 前言
-> <p>  vue 无疑是一个非常棒的前端MVVM库， 怀着好奇的心情开始看VUE源码，当然遇到了很多的疑问，也查了很多的资料看了一些文章。但是很多都忽略了很重要的部分或者是一些重要的细节，甚至只是把源码和注释翻译成中文贴出来。所以才打算写这篇文章，记录一下自己的学习过程，当然也希望能给其他想了解VUE源码的童鞋一点参考。如果有些地方笔者的理解错了，也欢迎指正出来，一起学习。</p>
+> <p>  vue 无疑是一个非常棒的前端MVVM库，怀着好奇的心情开始看VUE源码，当然遇到了很多的疑问，也查了很多的资料看了一些文章。但是很多都忽略了很重要的部分或者是一些重要的细节，甚至只是把源码和注释翻译成中文贴出来。所以才打算写这篇文章，记录一下自己的学习过程，当然也希望能给其他想了解VUE源码的童鞋一点参考。如果有些地方笔者的理解错了，也欢迎指正出来，一起学习。</p>
 ---
 <p>为了加深理解，我自己按着源码的思路造了一个简易的轮子，60%的实现都与VUE源代码一致，仓库的地址：<a href="https://github.com/eltonchan/rollup-ts">click me .</a> VUE的源码采用<a href="https://rollupjs.org/guide/en">rollup</a>和 <a href="https://flow.org/"> flow</a>至于为什么不采用typescript，主要考虑工程上成本和收益的考量， 这一点尤大大在知乎也有说过。</p>
 参考：<a href="">Vue 2.0 为什么选用 Flow 进行静态代码检查而不是直接使用 TypeScript？</a>
@@ -18,8 +18,8 @@
 ```
 
 ---
-### question ？
-带着问题学习一个事物往往能带来更好的效果，那我们就带着这几个问题开始学习之旅、
+### question?
+> 带着问题学习一个事物往往能带来更好的效果，那我们就带着这几个问题开始学习之旅
 - 如何对this.xxx的访问代理到this._data.xxx 上 ？
 - 如何实现数据劫持，监听数据的读写操作 ？
 - 如何实现依赖缓存 ？
@@ -90,6 +90,7 @@ export function proxy (target: IVue, sourceKey: string, key: string) {
 ```
 
 <p>可以看出, 在get的时候收集依赖，而Dep.target 其实就是watcher, 等下讲到watcher的时候再回过来， 这里要关注dep 其实dep在这里是一个闭包环境，在执行get 或者set的时候 还可以访问到创建的dep. eg: this.name 当在获取this.name 的值的时候 会创建一个Dep的实例， 把watcher 添加到这个dep中，</p>
+
 ![avatar](/images/3.jpg)
 
 
