@@ -23,13 +23,24 @@ export default class Vue implements IVue {
     _updates: Array<Function> = [];
     _options: object;
 
+    static options = {
+        components: Object.create(null)
+    };
+
     constructor(options) {
+        this._init(options);
+    }
+
+    _init(options) {
         this.id = ++uid;
         this.vm = this;
-        this._options = options;
+
+        const _options = Object.create((this.constructor as any).options);
+        this._options = Object.assign(options, _options);
+
         this._data = options.data;
         this.methods = options.methods;
-        this.el = options.el;
+        this.el = options.template || document.querySelector(options.el);
 
         this.initData();
         this.initComputed(options.computed);
@@ -38,7 +49,6 @@ export default class Vue implements IVue {
         callHook(this, 'mounted');
 
         this.initWatch(options.watch);
-
     }
 
     initData() {
@@ -53,8 +63,7 @@ export default class Vue implements IVue {
     }
 
     $mount() {
-        const el = document.querySelector(this.el);
-        this._compile = new Compile(this, el);
+        this._compile = new Compile(this);
         new Watcher(this, this._render, noop);
     }
 
@@ -77,6 +86,10 @@ export default class Vue implements IVue {
         }
     }
 
+    VueComponent(options) {
+        this._init(options);
+    }
+
     initComputed(computed) {
         if (!computed || typeof computed !== 'object') return;
         const keys = Object.keys(computed);
@@ -93,6 +106,10 @@ export default class Vue implements IVue {
 
             defineComputed(this, key);
         }
+    }
+
+    static component(id, options) {
+        Vue.options.components[id] = options;
     }
 }
 

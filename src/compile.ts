@@ -7,9 +7,9 @@ export default class Compile {
     originEle: Element;
     fragment: Node | null;
 
-    constructor(vm, el) {
+    constructor(vm) {
         this.vm = vm;
-        this.el = el;
+        this.el = vm.el;
         this.init();
     }
 

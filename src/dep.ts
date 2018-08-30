@@ -1,6 +1,6 @@
 
 
-import { IDep,  Isub } from './types';
+import { IDep,  Isub, IWatcher } from './types';
 
 let uid = 0;
 
@@ -14,9 +14,14 @@ export default class Dep implements IDep {
         this.subs = [];
     }
 
-    addSub(sub): void {
+    addSub(sub: IWatcher): void {
         if (this.subs.find(o => o.id === sub.id)) return;
         this.subs.push(sub);
+    }
+
+    removeSub (sub: IWatcher) {
+        const idx = this.subs.findIndex(o => o.id === sub.id);
+        if (idx >= 0) this.subs.splice(idx, 1);
     }
 
     notify():void {

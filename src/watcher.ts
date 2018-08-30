@@ -12,9 +12,12 @@ export default class Watcher implements IWatcher {
     cb: Function = noop;
     expression;
     getter;
-    depIds: Set<any>;
+    depIds: Set<number>;
+    newDepIds: Set<number>;
     id = 0;
     value: any;
+    deps: Array<Dep>;
+    newDeps: Array<Dep>;
     computed: boolean = false;
 
     constructor(
@@ -37,7 +40,11 @@ export default class Watcher implements IWatcher {
         }
 
         this.expression = expression.toString();
+
         this.depIds = new Set();
+        this.newDepIds = new Set();
+        this.deps = [];
+        this.newDeps = [];
 
         this.value = this.get();
     }
@@ -46,14 +53,41 @@ export default class Watcher implements IWatcher {
         Dep.target = this;
         const value = this.getter.call(this.vm); // 执行一次get 收集依赖
         Dep.target = null;
+        this.cleanupDeps(); // 清除依赖
         return value;
     }
 
     addDep(dep: Dep) {
         const id = dep.id;
-        if (!this.depIds.has(id)) {
-            dep.addSub(this);
+        if (!this.newDepIds.has(id)) {
+            this.newDepIds.add(id);
+            this.newDeps.push(dep);
+            if (!this.depIds.has(id)) {
+                dep.addSub(this);
+            }
         }
+    }
+    /**
+     * Clean up for dependency collection.
+     */
+    cleanupDeps() {
+        let i = this.deps.length;
+        while (i--) {
+            const dep = this.deps[i];
+            if (!this.depIds.has(dep.id)) {
+                dep.removeSub(this);
+            }
+        }
+
+        const tmp = this.depIds;
+        this.depIds = this.newDepIds;
+        this.newDepIds = tmp;
+        this.newDepIds.clear();
+
+        const deps = this.deps;
+        this.deps = this.newDeps;
+        this.newDeps = deps;
+        this.newDeps.length = 0;
     }
 
     update() {
