@@ -1,10 +1,12 @@
 <h1 align="center">Vue 源码学习</h1>
-<p align="center"><a href="https://vuejs.org" target="_blank" rel="noopener noreferrer"><img width="100" src="https://vuejs.org/images/logo.png" alt="Vue logo"></a></p>
+<p align="center"><a href="https://vuejs.org" target="_blank" rel="noopener noreferrer"><img width="100" src="https://vuejs.org/images/logo.png" alt="Vue logo" /></a></p>
 
 ### 前言
-> <p>  vue 无疑是一个非常棒的前端MVVM库，怀着好奇的心情开始看VUE源码，当然遇到了很多的疑问，也查了很多的资料看了一些文章。但是很多都忽略了很重要的部分或者是一些重要的细节，亦或者是一些很重要的部分没有指出。所以才打算写这篇文章，记录一下自己的学习过程，当然也希望能给其他想了解VUE源码的童鞋一点参考。如果有些地方笔者的理解错了，也欢迎指正出来，一起学习。</p>
+> <p>  vue 无疑是一个非常棒的前端MVVM库，怀着好奇的心情开始看VUE源码，当然遇到了很多的疑问，也查了很多的资料看了一些文章。但是很多都忽略了很重要的部分或者是一些重要的细节，亦或者是一些很重要的部分没有指出。所以才打算写这篇文章，记录一下自己的学习过程，当然也希望能给其他想了解VUE源码的童鞋一点参考。如果笔者在某些地方理解有误，也谢谢指正出来，一起学习。</p>
+
 ---
-<p>为了加深理解，我自己按着源码的思路造了一个简易的轮子，基本核心的实现都与VUE源代码一致，<a href="https://eltonchan.github.io/rollup-ts/index.html" >demo .</a>仓库的地址：<a href="https://github.com/eltonchan/rollup-ts">click me .</a> VUE的源码采用<a href="https://rollupjs.org/guide/en">rollup</a>和 <a href="https://flow.org/">flow</a>至于为什么不采用typescript，主要考虑工程上成本和收益的考量， 这一点尤大大在知乎也有说过。</p>
+
+<p>为了加深理解，我按着源码的思路造了一个简易的轮子，基本核心的实现是与VUE源代码一致的<a href="https://eltonchan.github.io/rollup-ts/index.html" >demo .</a>仓库的地址：<a href="https://github.com/eltonchan/rollup-ts">click me .</a> VUE的源码采用<a href="https://rollupjs.org/guide/en">rollup</a>和 <a href="https://flow.org/">flow</a>至于为什么不采用typescript，主要考虑工程上成本和收益的考量， 这一点尤大大在知乎也有说过。</p>
 参考：<a href="">Vue 2.0 为什么选用 Flow 进行静态代码检查而不是直接使用 TypeScript？</a>
 <p>不懂rollup 与typescript 也没关系，本项目已经配置好了， 只需要先执行npm i （或者cnpm i）安装相应依赖，然后 npm start 启动就可以。 npm run build 构建，默认是输出umd格式，如果需要cmd或者amd 可以在rollup.config.js配置文件修改。</p>
 
@@ -16,11 +18,10 @@
         sourcemap: true
     }
 ```
-
 ---
+### questions ?
+> 带着问题去了解一个事物往往能带来更好的收益，那我们就从下面几个问题开始
 
-### question
-带着问题学习一个事物往往能带来更好的效果，那我们就带着这几个问题开始学习之旅
 - 如何对this.xxx的访问代理到this._data.xxx 上 ？
 - 如何实现数据劫持，监听数据的读写操作 ？
 - 如何实现依赖缓存 ？
@@ -28,7 +29,7 @@
 - 如何实现数据修改 dom更新 ?
 
 ---
-> vue实现双向绑定原理，主要是利用<b>Object.defineProperty</b>和<b>发布订阅模式(定义了对象间的一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都将获得通知)，而在vue中，watcher 就是订阅者，而一对多的依赖关系 就是指data上的属性与watcher，而data上的属性如何与watcher 关联起来， dep 就是桥梁， 所以搞懂 dep, watcher, observe三者的关系，自然就搞懂了vue实现双向绑定的原理了</b>。
+> vue实现双向绑定原理，主要是利用<b>Object.defineProperty getter/setter</b>和<b>发布订阅模式(定义了对象间的一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都将获得通知)，而在vue中，watcher 就是订阅者，而一对多的依赖关系 就是指data上的属性与watcher，而data上的属性如何与watcher 关联起来， dep 就是桥梁， 所以搞懂 dep, watcher, observe三者的关系，自然就搞懂了vue实现双向绑定的原理了</b>。
  
  ### 整体流程图
 ![avatar](/images/2.jpg)
@@ -134,7 +135,7 @@ export function proxy (target: IVue, sourceKey: string, key: string) {
         this.value = this.get();
     }
 ```
-<p>这里的expression，对于初始化用来渲染视图的watcher来说，就是render方法，对于computed来说就是表达式，对于watch才是key，所以这边需要判断是字符串还是函数，而getter方法是用来取value的。这边有个depIds，deps，但是又有个newDepIds，newDeps，为什么这样设计，接下去再讲，先看this.value = this.get();可以看出在这里给watcher的value赋值，再来看get方法。</p>
+<p>这里的expression，对于初始化用来渲染视图的watcher来说，就是render方法，对于computed来说就是表达式，对于watch才是key，所以这边需要判断是字符串还是函数，而getter方法是用来取value的。这边有个depIds，deps，但是又有个newDepIds，newDeps，为什么这样设计，接下去再讲，先看this.value = this.get();可以看出在这里给watcher的value赋值，再来看get方法。</p>
 ```
     get() :void {
         Dep.target = this;
@@ -208,7 +209,7 @@ export default class Dep implements IDep {
 
 ---
 
-### Computed
+### Computed 计算属性是基于它们的依赖进行缓存的。只在相关依赖发生改变时它们才会重新求值
 > 回到开始的那个问题，如何实现依赖缓存？ name的更新如何让info也更新，如果name不变，info如何取值？
 ```
     computed: {
@@ -239,7 +240,11 @@ export default class Dep implements IDep {
         }
     }
 ```
-<p><b>可以看出来watcher 的getter方法就是computed属性的表达式，而在执行this.value = this.get();这个value就会是表达式的运行结果，所以其实Vue是把info的值存储在它的watcher的value里面的，然后又知道在取name的值的时候，会触发name的get方法，此时的Dep.target 就是这个info的watcher，而dep是一个闭包，还是之前收集name的那个dep， 所以name的dep就会有两个watcher，[renderWatcher, computedWatcher]， 当name更新的时候，这两个订阅者watcher都会收到通知，这也就是name的更新让info也更新。那info的值是watcher的value， 所以这边要做一个代理，把computed属性的取值代理到对应watcher的value，实现起来也很简单</b></p>  
+<p><b>可以看出来watcher 的getter方法就是computed属性的表达式，而在执行this.value = this.get();这个value就会是表达式的运行结果，所以其实Vue是把info的值存储在它的watcher的value里面的，然后又知道在取name的值的时候，会触发name的get方法，此时的Dep.target 就是这个info的watcher，而dep是一个闭包，还是之前收集name的那个dep， 所以name的dep就会有两个watcher，[renderWatcher, computedWatcher]， 当name更新的时候，这两个订阅者watcher都会收到通知，这也就是name的更新让info也更新。</b></p>
+
+![avatar](/images/5.jpg)
+
+<p>那info的值是watcher的value， 所以这边要做一个代理，把computed属性的取值代理到对应watcher的value，实现起来也很简单</p>  
 
 ```
     export default function defineComputed(vm: IVue, key: string) {
@@ -253,6 +258,7 @@ export default class Dep implements IDep {
         });
     }
 ```
+
 ---
 
 ### 依赖更新
@@ -297,10 +303,38 @@ export default class Dep implements IDep {
 <p>可以看出来，这里把newDepIds赋值给了depIds, 然后newDepIds再清空，deps也是这样的操作，这是一种效率很高的操作，避免使用了深拷贝。添加依赖的时候都是用newDepIds，newDeps来记录，删除的时候会去deps里面遍历查找，等删除了再把newDepIds赋值给depIds，这样能保证在更新依赖的时候，没有使用的依赖会从这个watcher中移除。
 </p>
 
+![avatar](/images/6.jpg)
+
 ---
 
 ### watch
+> 为什么watch 一个对象的时候 oldValue == value ？
+```
+    initWatch(watch) {
+        if (!watch || typeof watch !== 'object') return;
+        const keys = Object.keys(watch);
+        let i = keys.length;
 
+        while(i--) {
+            const key = keys[i];
+            const cb = watch[key];
+            new Watcher(this, key, cb);
+        }
+    }
+```
+<p>watch的属性也是一个实例化的Watcher，只是这个时候的expression是key，value 是vm[key]，而cb就是回调函数，所以这个时候对应属性的dep中自然就有这个watcher</p>
+
+```
+    run(cb) {
+        const value = this.get();
+        if (value !== this.value) {
+            const oldValue = this.value;
+            this.value = value;
+            cb.call(this.vm, value, oldValue);
+        }
+    }
+```
+<p>当属性更新的时候，会执行到这个run方法， 当watch一个对象的时候，watcher的value其实是一个引用，修改这个属性的时候，this.value也同步修改了，所以也就是为什么oldValue == value了， 至于作者为什么这么设计，我想肯定是有他原因的。</p>
 ---
 
 ### Compile
