@@ -54,7 +54,7 @@ export function proxy (target: IVue, sourceKey: string, key: string) {
     });
 }
 ```
-<p>可以看出，其实获取和修改this.xx 其实都是在获取或者修改this.data.xx;</p>
+<p>可以看出获取和修改this.xx 都是在获取或者修改this.data.xx;</p>
 
 -----
 
@@ -250,7 +250,7 @@ export default class Dep implements IDep {
         }
     }
 ```
-<p><b>可以看出来watcher 的getter方法就是computed属性的表达式，而在执行this.value = this.get();这个value就会是表达式的运行结果，所以其实Vue是把info的值存储在它的watcher的value里面的，然后又知道在取name的值的时候，会触发name的get方法，此时的Dep.target 就是这个info的watcher，而dep是一个闭包，还是之前收集name的那个dep， 所以name的dep就会有两个watcher，[renderWatcher, computedWatcher]， 当name更新的时候，这两个订阅者watcher都会收到通知，这也就是name的更新让info也更新。</b></p>
+<p><b>watcher 的getter方法就是computed属性的表达式，而在执行this.value = this.get();这个value就会是表达式的运行结果，所以其实Vue是把info的值存储在它的watcher的value里面的，然后又知道在取name的值的时候，会触发name的get方法，此时的Dep.target 就是这个info的watcher，而dep是一个闭包，还是之前收集name的那个dep， 所以name的dep就会有两个watcher，[renderWatcher, computedWatcher]， 当name更新的时候，这两个订阅者watcher都会收到通知，这也就是name的更新让info也更新。</b></p>
 
 ![avatar](/images/4.jpg)
 
@@ -310,7 +310,7 @@ export default class Dep implements IDep {
         this.newDeps.length = 0;
     }
 ```
-<p>可以看出来，这里把newDepIds赋值给了depIds, 然后newDepIds再清空，deps也是这样的操作，这是一种效率很高的操作，避免使用了深拷贝。添加依赖的时候都是用newDepIds，newDeps来记录，删除的时候会去deps里面遍历查找，等删除了再把newDepIds赋值给depIds，这样能保证在更新依赖的时候，没有使用的依赖会从这个watcher中移除。
+<p>这里把newDepIds赋值给了depIds, 然后newDepIds再清空，deps也是这样的操作，这是一种效率很高的操作，避免使用了深拷贝。添加依赖的时候都是用newDepIds，newDeps来记录，删除的时候会去deps里面遍历查找，等删除了再把newDepIds赋值给depIds，这样能保证在更新依赖的时候，没有使用的依赖会从这个watcher中移除。
 </p>
 
 ![avatar](/images/6.jpg)
