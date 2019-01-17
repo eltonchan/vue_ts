@@ -1,14 +1,14 @@
 {
-  "name": "my-lib",
+  "name": "vue_ts",
   "version": "1.0.0",
-  "description": "my lib",
+  "description": "vue ts",
   "main": "index.js",
   "scripts": {
     "start": "rollup -c rollup.config.ts -w",
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "prebuild": "rimraf dist",
     "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
-    "test": "echo \" ci run success. \""
+    "deploy": "echo \" ci run success. \""
   },
   "author": "yjh",
   "license": "MIT",

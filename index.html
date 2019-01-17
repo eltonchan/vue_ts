@@ -13,7 +13,7 @@
         <input type="text" v-model="age" />
         <p>{{ age }}</p>
         <p>info : {{ info }}</p>
-        <button @click="add">add age</button>
+        <button @click="addAge">addAge age</button>
         <button @click="changeName">change name</button>
     </div>
     <script>
@@ -43,7 +43,7 @@
             },
 
             methods: {
-                add: function() {
+                addAge: function() {
                     this.age += 1;
                 },
 

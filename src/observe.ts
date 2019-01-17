@@ -35,8 +35,8 @@ export default class Observe {
     
             set(newVal: any): void {
                 if (value === newVal) return;
-                self.walk(value);
                 value = newVal;
+                self.walk(value);
                 dep.notify();
             }
     
